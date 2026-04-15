@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Fruitcity Hero — Final Preview</title>
+
+    <style>
+      /* ================= GLOBAL ================= */
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: sans-serif;
+      }
+
+      /* ================= HERO ================= */
+      .fc-hero {
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+        perspective: 1200px;
+      }
+
+      /* ================= LAYERS ================= */
+      .fc-layer {
+        position: absolute;
+        inset: 0;
+        will-change: transform;
+      }
+
+      /* ================= BACKGROUND ================= */
+      .fc-bg {
+        z-index: 1;
+
+        background:
+          url("https://www.transparenttextures.com/patterns/cubes.png"),
+          repeating-linear-gradient(
+            120deg,
+            #31b0ff 0 160px,
+            #e082ff 160px 320px,
+            #ff9271 320px 480px,
+            #31b0ff 480px 640px
+          );
+
+        background-repeat: repeat, repeat;
+        background-size:
+          400px,
+          640px 640px;
+
+        animation: fcBgScrollLeft 18s linear infinite;
+      }
+
+      /* Continuous left scroll */
+      @keyframes fcBgScrollLeft {
+        from {
+          background-position:
+            0 0,
+            0 0;
+        }
+        to {
+          background-position:
+            -400px 0,
+            -640px 0;
+        }
+      }
+
+      /* ================= FLOATING ================= */
+      .fc-floating {
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      /* ================= CHARACTER ================= */
+      .fc-character {
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .fc-character img {
+        width: 420px;
+        max-width: 80%;
+        filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.4));
+        will-change: transform;
+      }
+
+      /* ================= LOGO ================= */
+      .fc-logo {
+        z-index: 5;
+        display: flex;
+        justify-content: center;
+        padding-top: 40px;
+      }
+
+      .fc-logo img {
+        width: 200px;
+      }
+
+      /* ================= FLOAT ITEMS ================= */
+      .fc-float {
+        position: absolute;
+        width: 90px;
+        opacity: 0.95;
+        will-change: transform;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section class="fc-hero" data-fc-hero>
+      <!-- BACKGROUND -->
+      <div class="fc-layer fc-bg"></div>
+
+      <!-- FLOATING OBJECT -->
+      <div class="fc-layer fc-floating">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png"
+          class="fc-float"
+        />
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/590/590685.png"
+          class="fc-float"
+        />
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/415/415733.png"
+          class="fc-float"
+        />
+      </div>
+
+      <!-- CHARACTER -->
+      <div class="fc-layer fc-character">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+          alt="Fruitcity Character"
+        />
+      </div>
+
+      <!-- LOGO -->
+      <div class="fc-layer fc-logo">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+          alt="Logo"
+        />
+      </div>
+    </section>
+
+    <script>
+      (() => {
+        "use strict";
+
+        if (window.__FC_HERO_ENGINE__) return;
+        window.__FC_HERO_ENGINE__ = true;
+
+        const root = document.querySelector("[data-fc-hero]");
+        if (!root) return;
+
+        const character = root.querySelector(".fc-character");
+        const floats = root.querySelectorAll(".fc-float");
+
+        /* ================= PARALLAX ================= */
+        function handleMove(e) {
+          const x = (e.clientX / window.innerWidth - 0.5) * 2;
+          const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+          character.style.transform = `translate(${x * 40}px, ${y * 30}px)`;
+        }
+
+        window.addEventListener("mousemove", handleMove, { passive: true });
+
+        /* ================= FLOATING ENGINE ================= */
+        floats.forEach((el) => {
+          const baseX = Math.random() * window.innerWidth;
+          const baseY = Math.random() * window.innerHeight;
+
+          el.style.left = baseX + "px";
+          el.style.top = baseY + "px";
+
+          const duration = 2000 + Math.random() * 2000;
+          const rotate = Math.random() * 20 - 10;
+
+          el.animate(
+            [
+              { transform: `translateY(0px) rotate(${rotate}deg)` },
+              { transform: `translateY(-25px) rotate(${rotate + 10}deg)` },
+              { transform: `translateY(0px) rotate(${rotate}deg)` },
+            ],
+            {
+              duration,
+              iterations: Infinity,
+              easing: "ease-in-out",
+            },
+          );
+        });
+
+        /* ================= CLEANUP SAFE ================= */
+        window.addEventListener("beforeunload", () => {
+          window.removeEventListener("mousemove", handleMove);
+        });
+      })();
+    </script>
+  </body>
+</html>
